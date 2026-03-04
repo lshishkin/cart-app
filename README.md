@@ -2,7 +2,7 @@
 
 Приложение реализует одностраничный интерфейс для просмотра и редактирования корзин пользователей.
 
-Задиплоино на Versel по адресу (cart-app-two-tau.vercel.app/)[https://cart-app-two-tau.vercel.app/]
+Задиплоино на Versel по адресу [cart-app-two-tau.vercel.app/](https://cart-app-two-tau.vercel.app/)
 
 ### 🧱 Стек технологий
 - React (Vite)
