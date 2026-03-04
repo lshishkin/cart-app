@@ -1,7 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Box, CircularProgress, Button, Typography } from '@mui/material';
-import { cartsApi } from '../shared/api/cartsApi';
 import { CartItem } from '../features/cartEdit/ui/CartItem';
 import {
   LoadingBox,
@@ -10,59 +8,18 @@ import {
   ProductTableStyled,
   ProductHeaderStyled,
 } from '../shared/ui/styles';
+import { useGetCart, useQuantityMutation, useUpdateMutation } from '../entities/cart/api';
 
 export const CartDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const cartId = id ? parseInt(id, 10) : 0;
 
-  const { data: cart, isLoading, error } = useQuery({
-    queryKey: ['cart', cartId],
-    queryFn: () => cartsApi.getCartById(cartId),
-  });
+  const { data: cart, isLoading, error } = useGetCart(cartId);
 
-  const updateMutation = useMutation({
-    mutationFn: (productId: number) => {
-      const updatedProducts = cart!.products
-        .filter((p) => p.id !== productId)
-        .map((p) => ({
-          id: p.id,
-          quantity: p.quantity,
-        }));
+  const updateMutation = useUpdateMutation(cartId, cart);
 
-      return cartsApi.updateCart(cartId, {
-        merge: true,
-        products: updatedProducts,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', cartId] });
-      queryClient.invalidateQueries({ queryKey: ['carts'] });
-    },
-  });
-
-  const quantityMutation = useMutation({
-    mutationFn: (data: { productId: number; quantity: number }) => {
-      const updateProducts = cart!.products.map((p) =>
-        p.id === data.productId
-          ? { ...p, quantity: data.quantity }
-          : p
-      );
-
-      return cartsApi.updateCart(cartId, {
-        merge: true,
-        products: updateProducts.map((p) => ({
-          id: p.id,
-          quantity: p.quantity,
-        })),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', cartId] });
-      queryClient.invalidateQueries({ queryKey: ['carts'] });
-    },
-  });
+  const quantityMutation = useQuantityMutation(cartId, cart);
 
   if (isLoading) {
     return (

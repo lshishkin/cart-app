@@ -1,6 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
 import { Box, CircularProgress, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { cartsApi } from '../shared/api/cartsApi';
 import { useCartsStore } from '../shared/hooks/useCartsStore';
 import { CartCard } from '../entities/cart/ui/CartCard';
 import {
@@ -8,14 +6,12 @@ import {
   ErrorBox,
   PaginationBox,
 } from '../shared/ui/styles';
+import { useGetCartList } from '../entities/cartList/api';
 
 export const CartsListPage = () => {
   const { limit, skip, setLimit, setSkip } = useCartsStore();
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['carts', limit, skip],
-    queryFn: () => cartsApi.getCartsList(limit, skip),
-  });
+  const { data, isLoading, error } = useGetCartList(limit, skip);
 
   const handleNextPage = () => {
     setSkip(skip + limit);
